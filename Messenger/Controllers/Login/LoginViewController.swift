@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseAuth
 import FBSDKLoginKit
+import GoogleSignIn
 
 
 class LoginViewController: UIViewController {
@@ -91,11 +92,35 @@ class LoginViewController: UIViewController {
         button.layer.masksToBounds = true
         button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
         button.permissions = ["email", "public_profile"]
+        
         return button
     }()
     
+    private let googleSignInButton: GIDSignInButton = {
+        
+        let button = GIDSignInButton()
+        
+        button.layer.cornerRadius = 8
+        button.layer.masksToBounds = true
+        
+        return button
+    }()
+    
+    private var loginObserver: NSObjectProtocol?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        loginObserver = NotificationCenter.default.addObserver(forName: Notification.Name.didLogInNotification,
+                                                               object: nil,
+                                                               queue: OperationQueue.main,
+                                                               using: { [weak self] _ in
+                                                                guard let strongSelf = self else {
+                                                                    return
+                                                                }
+                                                                
+                                                                strongSelf.navigationController?.dismiss(animated: true, completion: nil)
+                                                               })
         
         title = "Login"
         view.backgroundColor = .white
@@ -114,6 +139,8 @@ class LoginViewController: UIViewController {
         
         facebookLoginButton.delegate = self
         
+        GIDSignIn.sharedInstance().presentingViewController = self
+        
         // Add subviews
         view.addSubview(scrollView)
         
@@ -122,6 +149,8 @@ class LoginViewController: UIViewController {
         scrollView.addSubview(passwordField)
         scrollView.addSubview(loginButton)
         scrollView.addSubview(facebookLoginButton)
+        scrollView.addSubview(googleSignInButton)
+        
     }
     
     override func viewDidLayoutSubviews() {
@@ -155,6 +184,17 @@ class LoginViewController: UIViewController {
                                            y: loginButton.bottom + 8,
                                            width: scrollView.width - 60,
                                            height: 52)
+        
+        googleSignInButton.frame = CGRect(x: 30,
+                                          y: facebookLoginButton.bottom + 8,
+                                          width: scrollView.width - 60,
+                                          height: 52)
+    }
+    
+    deinit {
+        if let observer = loginObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
     }
     
     
@@ -261,7 +301,7 @@ extension LoginViewController: LoginButtonDelegate {
                 return
             }
             
-//            print("\(result)")
+            //            print("\(result)")
             
             guard let userName = result["name"] as? String,
                   let email = result["email"] as? String else {
