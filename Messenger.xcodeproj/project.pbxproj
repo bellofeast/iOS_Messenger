@@ -23,6 +23,7 @@
 		9141313826D54A4D004A5F63 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9141313726D54A4D004A5F63 /* ProfileViewController.swift */; };
 		9141313B26D54E7B004A5F63 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9141313A26D54E7B004A5F63 /* Extension.swift */; };
 		91A5A48D26D751B7005C0DFE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 91A5A48C26D751B7005C0DFE /* GoogleService-Info.plist */; };
+		91C63E1626DDFDAF00CC6117 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91C63E1526DDFDAF00CC6117 /* ChatViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		9141313726D54A4D004A5F63 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		9141313A26D54E7B004A5F63 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		91A5A48C26D751B7005C0DFE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		91C63E1526DDFDAF00CC6117 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,7 @@
 				9141313326D54A1C004A5F63 /* VideoPlayerViewController.swift */,
 				9141313526D54A39004A5F63 /* NewConversationViewController.swift */,
 				9141313726D54A4D004A5F63 /* ProfileViewController.swift */,
+				91C63E1526DDFDAF00CC6117 /* ChatViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -317,6 +320,7 @@
 				9141311426D5473E004A5F63 /* AppDelegate.swift in Sources */,
 				9141313826D54A4D004A5F63 /* ProfileViewController.swift in Sources */,
 				9141311626D5473E004A5F63 /* SceneDelegate.swift in Sources */,
+				91C63E1626DDFDAF00CC6117 /* ChatViewController.swift in Sources */,
 				9141313226D54A0F004A5F63 /* PhotoViewerViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
