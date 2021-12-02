@@ -10,16 +10,35 @@ import FirebaseAuth
 import JGProgressHUD
 
 
+struct Converstation {
+    
+    let id: String
+    let name: String
+    let otherUserEmail: String
+    let latestMessage: LatestMessage
+}
+
+struct LatestMessage {
+    
+    let date: String
+    let text: String
+    let isRead: Bool
+}
+
+
 class ConversationViewController: UIViewController {
     
     private let spinner = JGProgressHUD(style: .extraLight)
+    
+    private var conversations = [Converstation]()
     
     private let tableView: UITableView = {
 
         let table = UITableView()
         
         table.isHidden = true
-        table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        table.register(ConversationTableViewCell.self,
+                       forCellReuseIdentifier: ConversationTableViewCell.identifier)
         
         return table
     }()
@@ -49,8 +68,38 @@ class ConversationViewController: UIViewController {
         
         setUpTableView()
         fetchConversations()
-        
+        startListeningForConversations()
     }
+    
+    private func startListeningForConversations() {
+        
+        guard let email = UserDefaults.standard.value(forKey: "email") as? String else {
+            return
+        }
+        print("starting conversation fetch...")
+        let safeEmail = DatabaseManager.safeEmail(emailAddress: email)
+        
+        DatabaseManager.shared.getAllConversations(for: safeEmail, completion: { [weak self] result in
+            
+            switch result {
+            
+            case .success(let conversations):
+                print("successfully got converstation models")
+                guard !conversations.isEmpty else {
+                    return
+                }
+                self?.conversations = conversations
+                
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                }
+                
+            case .failure(let error):
+                print("Failed to get conversations: \(error)")
+            }
+        })
+    }
+    
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -111,7 +160,7 @@ class ConversationViewController: UIViewController {
             return
         }
         
-        let vc = ChatViewController(with: email)
+        let vc = ChatViewController(with: email, id: nil)
         
         vc.isNewConversation = true
         
@@ -126,15 +175,17 @@ class ConversationViewController: UIViewController {
 extension ConversationViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return conversations.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        print("cell loading")
+        let model = conversations[indexPath.row]
         
-        cell.textLabel?.text = "Hello World"
-        cell.accessoryType = .disclosureIndicator
+        let cell = tableView.dequeueReusableCell(withIdentifier: ConversationTableViewCell.identifier, for: indexPath) as! ConversationTableViewCell
+        
+        cell.configure(with: model)
         
         return cell
     }
@@ -143,11 +194,18 @@ extension ConversationViewController: UITableViewDelegate, UITableViewDataSource
         
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let vc = ChatViewController(with: "kim@gmail.com")
+        let model = conversations[indexPath.row]
         
-        vc.title = "Kim"
+        let vc = ChatViewController(with: model.otherUserEmail, id: model.id)
+        
+        vc.title = model.name
+        
         vc.navigationItem.largeTitleDisplayMode = .never
         navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 120
     }
     
 }
